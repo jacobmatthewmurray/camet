@@ -16,7 +16,7 @@ class CametEnv(gym.Env):
     def __init__(self):
         self.hood = [i for i in set(combinations([-1, 0, 1] * 2, 2)) if i != (0, 0)]
         self.rule = {True: (2, 3), False: (3, 3)}
-        self.board_dim = (5, 5)
+        self.board_dim = (10, 10)
 
         self.history = []
         self.action_space = spaces.Discrete(np.product(self.board_dim))
@@ -27,6 +27,7 @@ class CametEnv(gym.Env):
         self.state = None
 
         self.steps_beyond_done = None
+        self.current_action = None
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -50,27 +51,19 @@ class CametEnv(gym.Env):
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
         state = self.state
+        self.history.append(state)
 
         if state[action] == 1:
             state[action] = 0
         else:
             state[action] = 1
 
-        # row = int(action / self.board_dim[0])
-        # col = int(action % self.board_dim[1])
-
-        # if state[row][col] == 1:
-        #     state[row][col] = 0
-        # else:
-        #     state[row][col] = 1
-
         self.state = self.get_next_state(state.reshape(self.board_dim)).reshape(np.product(self.board_dim))
 
-        done = any((self.state == x).all() for x in self.history)
+        done = (list(self.state) in [list(i) for i in self.history]) or (sum(self.state) <= self.rule[True][0])
 
         if not done:
             reward = 1
-            self.history.append(self.state)
         elif self.steps_beyond_done is None:
             self.steps_beyond_done = 0
             reward = 1
@@ -86,8 +79,9 @@ class CametEnv(gym.Env):
 
     def reset(self):
         self.state = self.np_random.randint(0, 1+1, np.product(self.board_dim))
-        self.history.append(self.state)
         self.steps_beyond_done = None
+        self.current_action = None
+        self.history = []
         return self.state
 
     def render(self, mode='human', close=False):
@@ -115,7 +109,13 @@ class CametEnv(gym.Env):
 
                     self.viewer.add_geom(cell)
 
-            if self.state is None: return None
+        if self.state is None: return None
+
+        for i, v in enumerate(self.state):
+            if v == 1:
+                self.viewer.geoms[i].set_color(0, 0, 0)
+            else:
+                self.viewer.geoms[i].set_color(1, 1, 1)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 

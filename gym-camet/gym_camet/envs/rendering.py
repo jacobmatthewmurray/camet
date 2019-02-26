@@ -78,7 +78,7 @@ class Viewer(object):
         self.onetime_geoms.append(geom)
 
     def render(self, return_rgb_array=False):
-        glClearColor(1,1,1,1)
+        glClearColor(1, 1, 1, 1)
         self.window.clear()
         self.window.switch_to()
         self.window.dispatch_events()
