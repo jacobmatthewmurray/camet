@@ -16,7 +16,7 @@ class CametEnv(gym.Env):
     def __init__(self):
         self.hood = [i for i in set(combinations([-1, 0, 1] * 2, 2)) if i != (0, 0)]
         self.rule = {True: (2, 3), False: (3, 3)}
-        self.board_dim = (10, 10)
+        self.board_dim = (5, 5)
 
         self.history = []
         self.action_space = spaces.Discrete(np.product(self.board_dim))
