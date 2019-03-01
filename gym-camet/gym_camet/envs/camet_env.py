@@ -16,7 +16,7 @@ class CametEnv(gym.Env):
     def __init__(self):
         self.hood = [i for i in set(combinations([-1, 0, 1] * 2, 2)) if i != (0, 0)]
         self.rule = {True: (2, 3), False: (3, 3)}
-        self.board_dim = (5, 5)
+        self.board_dim = (4, 4)
 
         self.history = []
         self.action_space = spaces.Discrete(np.product(self.board_dim))
@@ -52,6 +52,7 @@ class CametEnv(gym.Env):
         assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
         state = self.state
         self.history.append(state)
+        self.current_action = action
 
         if state[action] == 1:
             state[action] = 0
@@ -78,7 +79,7 @@ class CametEnv(gym.Env):
         return self.state, reward, done, {}
 
     def reset(self):
-        self.state = self.np_random.randint(0, 1+1, np.product(self.board_dim))
+        self.state = self.np_random.choice(2, np.product(self.board_dim), p=[0.8, 0.2])
         self.steps_beyond_done = None
         self.current_action = None
         self.history = []
@@ -113,9 +114,15 @@ class CametEnv(gym.Env):
 
         for i, v in enumerate(self.state):
             if v == 1:
-                self.viewer.geoms[i].set_color(0, 0, 0)
+                if self.current_action == i:
+                    self.viewer.geoms[i].set_color(0, 1, 0)
+                else:
+                    self.viewer.geoms[i].set_color(0, 0, 0)
             else:
-                self.viewer.geoms[i].set_color(1, 1, 1)
+                if self.current_action == i:
+                    self.viewer.geoms[i].set_color(1, 0, 0)
+                else:
+                    self.viewer.geoms[i].set_color(1, 1, 1)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
