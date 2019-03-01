@@ -4,9 +4,9 @@ import pygame
 from itertools import combinations
 
 
-N = 5
-M = 5
-p = 0.7
+N = 4
+M = 4
+p = 0.9
 
 black = (0, 0, 0)
 white = (255, 255, 255)
