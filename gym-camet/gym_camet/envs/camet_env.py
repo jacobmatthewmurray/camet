@@ -16,10 +16,11 @@ class CametEnv(gym.Env):
     def __init__(self):
         self.hood = [i for i in set(combinations([-1, 0, 1] * 2, 2)) if i != (0, 0)]
         self.rule = {True: (2, 3), False: (3, 3)}
-        self.board_dim = (4, 4)
+        self.board_dim = (5, 5)
 
         self.history = []
-        self.action_space = spaces.Discrete(np.product(self.board_dim))
+        self.action_space = spaces.Discrete(np.product(self.board_dim)+1)
+        # self.action_space = spaces.MultiBinary(np.product(self.board_dim))
         self.observation_space = spaces.MultiBinary(np.product(self.board_dim))
 
         self.seed()
@@ -52,12 +53,18 @@ class CametEnv(gym.Env):
         assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
         state = self.state
         self.history.append(state)
-        self.current_action = action
+        # self.current_action = action
 
-        if state[action] == 1:
-            state[action] = 0
+        # only perform action if not the no action, which is action equal to board dim
+
+        if action == np.product(self.board_dim):
+            self.current_action = None
         else:
-            state[action] = 1
+            self.current_action = action
+            if state[action] == 1:
+                state[action] = 0
+            else:
+                state[action] = 1
 
         self.state = self.get_next_state(state.reshape(self.board_dim)).reshape(np.product(self.board_dim))
 
@@ -79,7 +86,7 @@ class CametEnv(gym.Env):
         return self.state, reward, done, {}
 
     def reset(self):
-        self.state = self.np_random.choice(2, np.product(self.board_dim), p=[0.8, 0.2])
+        self.state = self.np_random.choice(2, np.product(self.board_dim), p=[0.5, 0.5])
         self.steps_beyond_done = None
         self.current_action = None
         self.history = []

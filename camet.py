@@ -72,3 +72,9 @@ class Camet:
         else:
             self.state[move] = 1
 
+    def make_move(self, move_index):
+
+        if self.state[move_index] == 1:
+            self.state[move_index] = 0
+        else:
+            self.state[move_index] = 1
