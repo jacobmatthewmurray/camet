@@ -15,11 +15,16 @@ class Camet:
 
         self.state = None
 
-    def seed(self, pattern='random'):
+    def seed(self, pattern=None):
 
-        if pattern == 'random':
-
+        if not pattern:
             return np.random.choice(2, np.product(self.dimensions), p=[0.5, 0.5])
+        else:
+            initial_state = np.zeros(np.product(self.dimensions))
+            for i in pattern:
+                initial_state[i] = 1
+            return initial_state
+
 
     def get_next_generation(self, state):
 
@@ -38,7 +43,7 @@ class Camet:
 
         return next_state.reshape(np.product(self.dimensions))
 
-    def reset(self, pattern='random'):
+    def reset(self, pattern=None):
         self.history = []
         self.state = self.seed(pattern)
 
@@ -72,9 +77,18 @@ class Camet:
         else:
             self.state[move] = 1
 
-    def make_move(self, move_index):
+    def make_move(self, action='none'):
+
+        if action == 'random':
+            move_index = np.random.randint(np.product(self.dimensions))
+        elif action == 'none':
+            return []
+        elif type(action) == int:
+            move_index = action
 
         if self.state[move_index] == 1:
             self.state[move_index] = 0
         else:
             self.state[move_index] = 1
+
+        return [move_index]

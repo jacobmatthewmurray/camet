@@ -4,8 +4,8 @@ import pygame
 from itertools import combinations
 
 
-N = 4
-M = 4
+N = 5
+M = 5
 p = 0.9
 
 black = (0, 0, 0)

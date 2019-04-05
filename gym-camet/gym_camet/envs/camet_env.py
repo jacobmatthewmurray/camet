@@ -19,7 +19,7 @@ class CametEnv(gym.Env):
         self.board_dim = (5, 5)
 
         self.history = []
-        self.action_space = spaces.Discrete(np.product(self.board_dim)+1)
+        self.action_space = spaces.Discrete(np.product(self.board_dim))
         # self.action_space = spaces.MultiBinary(np.product(self.board_dim))
         self.observation_space = spaces.MultiBinary(np.product(self.board_dim))
 
@@ -68,7 +68,9 @@ class CametEnv(gym.Env):
 
         self.state = self.get_next_state(state.reshape(self.board_dim)).reshape(np.product(self.board_dim))
 
-        done = (list(self.state) in [list(i) for i in self.history]) or (sum(self.state) <= self.rule[True][0])
+        done = (list(self.state) in [list(i) for i in self.history]) or \
+               (sum(self.state) <= self.rule[True][0]) or \
+               (len(self.history) == 80)
 
         if not done:
             reward = 1
@@ -86,7 +88,11 @@ class CametEnv(gym.Env):
         return self.state, reward, done, {}
 
     def reset(self):
-        self.state = self.np_random.choice(2, np.product(self.board_dim), p=[0.5, 0.5])
+        # self.state = self.np_random.choice(2, np.product(self.board_dim), p=[0.9, 0.1])
+        self.state = np.zeros(np.product(self.board_dim))
+        self.state[11] = 1
+        self.state[13] = 1
+        # self.state[16:19] = 1
         self.steps_beyond_done = None
         self.current_action = None
         self.history = []
@@ -122,12 +128,12 @@ class CametEnv(gym.Env):
         for i, v in enumerate(self.state):
             if v == 1:
                 if self.current_action == i:
-                    self.viewer.geoms[i].set_color(0, 1, 0)
+                    self.viewer.geoms[i].set_color(1, 0, 0)
                 else:
                     self.viewer.geoms[i].set_color(0, 0, 0)
             else:
                 if self.current_action == i:
-                    self.viewer.geoms[i].set_color(1, 0, 0)
+                    self.viewer.geoms[i].set_color(0, 1, 0)
                 else:
                     self.viewer.geoms[i].set_color(1, 1, 1)
 

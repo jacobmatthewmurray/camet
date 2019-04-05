@@ -16,7 +16,7 @@ class CametDualEnv(gym.Env):
     def __init__(self):
         self.hood = [i for i in set(combinations([-1, 0, 1] * 2, 2)) if i != (0, 0)]
         self.rule = {True: (2, 3), False: (3, 3)}
-        self.board_dim = (5, 5)
+        self.board_dim = (4, 4)
 
         self.history = []
         self.action_space = spaces.Discrete(2)
@@ -54,11 +54,11 @@ class CametDualEnv(gym.Env):
         self.history.append(state)
 
         if action == 1:
-            self.current_action = self.np_random.randint(np.product(self.board_dim))
-            if state[action] == 1:
-                state[action] = 0
+            self.current_action = 5 #self.np_random.randint(np.product(self.board_dim))
+            if state[self.current_action] == 1:
+                state[self.current_action] = 0
             else:
-                state[action] = 1
+                state[self.current_action] = 1
         else:
             self.current_action = None
 
