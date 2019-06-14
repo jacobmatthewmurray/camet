@@ -69,8 +69,7 @@ class CametEnv(gym.Env):
         self.state = self.get_next_state(state.reshape(self.board_dim)).reshape(np.product(self.board_dim))
 
         done = (list(self.state) in [list(i) for i in self.history]) or \
-               (sum(self.state) <= self.rule[True][0]) or \
-               (len(self.history) == 80)
+               (sum(self.state) <= self.rule[True][0]) or (len(self.history) == 40)
 
         if not done:
             reward = 1
@@ -128,12 +127,12 @@ class CametEnv(gym.Env):
         for i, v in enumerate(self.state):
             if v == 1:
                 if self.current_action == i:
-                    self.viewer.geoms[i].set_color(1, 0, 0)
+                    self.viewer.geoms[i].set_color(0, 0, 0)
                 else:
                     self.viewer.geoms[i].set_color(0, 0, 0)
             else:
                 if self.current_action == i:
-                    self.viewer.geoms[i].set_color(0, 1, 0)
+                    self.viewer.geoms[i].set_color(1, 1, 1)
                 else:
                     self.viewer.geoms[i].set_color(1, 1, 1)
 
